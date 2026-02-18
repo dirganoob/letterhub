@@ -2,7 +2,7 @@ import Navbar from "../../components/Navbar";
 import SidebarAdmin from "../../components/SidebarAdmin";
 import React from "react";
 
-const SignLetter = () => {
+const OutgoingLetter = () => {
     return (
         <div className="flex min-h-screen bg-[#EDFCF2]">
 
@@ -21,4 +21,4 @@ const SignLetter = () => {
         </div>
     )
 }
-export default SignLetter;
+export default OutgoingLetter;
