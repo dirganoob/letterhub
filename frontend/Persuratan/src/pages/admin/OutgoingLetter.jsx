@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Eye, Download, Plus, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight, Search } from "lucide-react";
 
 // ── Sample Data ──
 const allLetters = [
@@ -18,8 +18,9 @@ const allLetters = [
 ];
 
 const ITEMS_PER_PAGE = 8;
-
 const tabs = ["Semua", "Draft", "Pending", "Disetujui", "Ditolak"];
+
+// ── Action Icons ──
 
 // ── Status Badge ──
 const StatusBadge = ({ status }) => {
@@ -48,30 +49,24 @@ const OutgoingLetter = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState("");
 
-    // Filter by tab
     const filteredByTab = activeTab === "Semua"
         ? allLetters
         : allLetters.filter((l) => l.status === activeTab);
 
-    // Filter by search
     const filtered = filteredByTab.filter((l) =>
         l.nomor.toLowerCase().includes(searchQuery.toLowerCase()) ||
         l.perihal.toLowerCase().includes(searchQuery.toLowerCase()) ||
         l.tujuan.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Pagination
     const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
     const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
     const paginated = filtered.slice(startIdx, startIdx + ITEMS_PER_PAGE);
 
-    // Reset page when filter changes
     const handleTabChange = (tab) => {
         setActiveTab(tab);
         setCurrentPage(1);
     };
-
-    const canDownload = (status) => status === "Disetujui";
 
     return (
         <div className="px-8 py-6 relative">
@@ -111,7 +106,6 @@ const OutgoingLetter = () => {
                         ))}
                     </div>
 
-                    {/* Inline search */}
                     <div className="relative w-64">
                         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input
@@ -173,22 +167,49 @@ const OutgoingLetter = () => {
                                         <td className="py-4 text-center">
                                             <StatusBadge status={letter.status} />
                                         </td>
+                                        {/* ── AKSI COLUMN ── */}
                                         <td className="py-4 pr-6">
                                             <div className="flex items-center justify-center gap-2">
-                                                {/* View button */}
+                                                {/* View — uses /IkonView.png, fallback to styled button */}
                                                 <button
-                                                    className="w-8 h-8 rounded-lg bg-gray-50 hover:bg-emerald-50 flex items-center justify-center text-gray-400 hover:text-emerald-600 transition-all duration-200"
-                                                    title="Lihat"
+                                                    className="w-10 h-10 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 flex items-center justify-center transition-all duration-200 cursor-pointer hover:shadow-sm"
+                                                    title="Lihat Surat"
                                                 >
-                                                    <Eye size={15} />
+                                                    <img
+                                                        src="/IkonView.png"
+                                                        alt="View"
+                                                        className="w-5 h-5 object-contain"
+                                                        onError={(e) => {
+                                                            e.target.style.display = "none";
+                                                            e.target.nextSibling.style.display = "flex";
+                                                        }}
+                                                    />
+                                                    <svg style={{ display: "none" }} xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                                        <circle cx="12" cy="12" r="3" />
+                                                    </svg>
                                                 </button>
-                                                {/* Download button — only for Disetujui */}
-                                                {canDownload(letter.status) && (
+
+                                                {/* Download — ONLY for Disetujui, uses /IkonDownload.png */}
+                                                {letter.status === "Disetujui" && (
                                                     <button
-                                                        className="w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 flex items-center justify-center text-emerald-500 hover:text-emerald-700 transition-all duration-200"
+                                                        className="w-10 h-10 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 flex items-center justify-center transition-all duration-200 cursor-pointer hover:shadow-sm"
                                                         title="Download PDF"
                                                     >
-                                                        <Download size={15} />
+                                                        <img
+                                                            src="/IkonDownload.png"
+                                                            alt="Download"
+                                                            className="w-5 h-5 object-contain"
+                                                            onError={(e) => {
+                                                                e.target.style.display = "none";
+                                                                e.target.nextSibling.style.display = "flex";
+                                                            }}
+                                                        />
+                                                        <svg style={{ display: "none" }} xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                                            <polyline points="7 10 12 15 17 10" />
+                                                            <line x1="12" y1="15" x2="12" y2="3" />
+                                                        </svg>
                                                     </button>
                                                 )}
                                             </div>
@@ -206,7 +227,6 @@ const OutgoingLetter = () => {
                                 Menampilkan {startIdx + 1}–{Math.min(startIdx + ITEMS_PER_PAGE, filtered.length)} dari {filtered.length} surat
                             </p>
                             <div className="flex items-center gap-1.5">
-                                {/* Prev */}
                                 <button
                                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                     disabled={currentPage === 1}
@@ -215,7 +235,6 @@ const OutgoingLetter = () => {
                                     <ChevronLeft size={16} />
                                 </button>
 
-                                {/* Page numbers */}
                                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                                     <button
                                         key={page}
@@ -229,7 +248,6 @@ const OutgoingLetter = () => {
                                     </button>
                                 ))}
 
-                                {/* Next */}
                                 <button
                                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                                     disabled={currentPage === totalPages}
